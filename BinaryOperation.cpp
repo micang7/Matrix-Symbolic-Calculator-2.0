@@ -1,6 +1,11 @@
 #include "BinaryOperation.h"
 
 #include "Parser.h"
+#include "AbstractSyntaxTree.h"
+#include "UnaryOperation.h"
+#include "Constant.h"
+#include "Matrix.h"
+#include "Variable.h"
 
 BinaryOperation::BinaryOperation(const Napis& opr) : Operation(opr) {}
 
@@ -20,6 +25,41 @@ bool BinaryOperation::simplify(AbstractSyntaxTree& ast)
 {
 	if (m_leftChild->simplify(ast)) return true;
 	if (m_rightChild->simplify(ast)) return true;
+}
+
+bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated)
+{
+	return false;
+}
+
+bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated)
+{
+	return false;
+}
+
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated)
+{
+	return false;
 }
 
 Napis BinaryOperation::toNapis() const

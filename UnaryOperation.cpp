@@ -1,5 +1,11 @@
 #include "UnaryOperation.h"
 
+#include "AbstractSyntaxTree.h"
+#include "BinaryOperation.h"
+#include "Constant.h"
+#include "Matrix.h"
+#include "Variable.h"
+
 UnaryOperation::UnaryOperation(const Napis& opr) : Operation(opr) {}
 
 TreeNode* UnaryOperation::clone() const
@@ -17,6 +23,41 @@ TreeNode* UnaryOperation::nextFreeNode()
 bool UnaryOperation::simplify(AbstractSyntaxTree& ast)
 {
 	if (m_leftChild->simplify(ast)) return true;
+}
+
+bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated)
+{
+	return false;
+}
+
+bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated)
+{
+	return false;
+}
+
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated)
+{
+	return false;
 }
 
 Napis UnaryOperation::toNapis() const

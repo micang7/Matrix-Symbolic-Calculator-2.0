@@ -2,6 +2,10 @@
 
 #include "Parser.h"
 #include "AbstractSyntaxTree.h"
+#include "UnaryOperation.h"
+#include "BinaryOperation.h"
+#include "Constant.h"
+#include "Variable.h"
 #include <iostream>
 
 Matrix::Matrix(const Napis& expression)
@@ -80,6 +84,41 @@ Matrix::Matrix(int rows, int cols, const Napis& expression)
 TreeNode* Matrix::clone() const
 {
 	return new Matrix(*this);
+}
+
+bool Matrix::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated)
+{
+	return false;
+}
+
+bool Matrix::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated)
+{
+	return false;
+}
+
+bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated)
+{
+	return false;
+}
+
+bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated)
+{
+	return false;
 }
 
 Napis Matrix::toNapis() const
