@@ -23,40 +23,55 @@ TreeNode* UnaryOperation::nextFreeNode()
 bool UnaryOperation::simplify(AbstractSyntaxTree& ast)
 {
 	if (m_leftChild->simplify(ast)) return true;
+	return m_leftChild->simplify_L(ast, this, m_opr == '-');
 }
 
 bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated)
 {
+	if (m_opr == '-') {
+		if (leftIsNegated) {
+			ast.removeUnaryNode(m_parent);
+			ast.removeUnaryNode(this);
+			return false;
+		}
+		return m_leftChild->simplify_L(ast, opr, true);
+	}
 	return false;
 }
 
 bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated)
 {
+	if (m_opr == '-') return m_leftChild->simplify_L(ast, opr, true);
 	return false;
 }
 
 bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated)
 {
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
 	return false;
 }
 
 bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated)
 {
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
 	return false;
 }
 
 bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated)
 {
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
 	return false;
 }
 
 bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated)
 {
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
 	return false;
 }
 
 bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated)
 {
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
 	return false;
 }
 

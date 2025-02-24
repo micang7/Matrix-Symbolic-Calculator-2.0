@@ -19,13 +19,13 @@ void AbstractSyntaxTree::print_nodes(const std::string& padding, const std::stri
 		if ((node->m_leftChild == nullptr) && (node->m_rightChild == nullptr)) {
 			std::cout << std::endl << padding;
 			if (has_left_sibling) {
-				std::cout << "|";
+				std::cout << "\033[32m|\033[0m";
 			}
 		}
 		else {
-			std::string new_padding = padding + (has_left_sibling ? "|  " : "   ");
-			print_nodes(new_padding, "|_ ", node->m_rightChild, node->m_leftChild != nullptr);
-			print_nodes(new_padding, "|_ ", node->m_leftChild, false);
+			std::string new_padding = padding + (has_left_sibling ? "\033[32m|  \033[0m" : "   ");
+			print_nodes(new_padding, "\033[32m|_ \033[0m", node->m_rightChild, node->m_leftChild != nullptr);
+			print_nodes(new_padding, "\033[32m|_ \033[0m", node->m_leftChild, false);
 		}
 	}
 }
@@ -98,7 +98,15 @@ AbstractSyntaxTree::AbstractSyntaxTree(const Napis& infixExpression)
 	if (constant.getLen() > 0) addChild(current, Constant(constant.toInt()));
 
 #ifdef AST_SIMPLIFY
+	std::cout << "before:" << std::endl;
+	printTree();
+
 	simplify();
+	
+	std::cout << std::endl << "after:" << std::endl;
+	printTree();
+#else
+	printTree();
 #endif
 }
 
@@ -268,8 +276,8 @@ void AbstractSyntaxTree::printTree(TreeNode* root) const
 	if (root == nullptr) return;
 
 	std::cout << root->toNapisJustNode().getStr();
-	print_nodes("", "|_ ", root->m_rightChild, root->m_leftChild != nullptr);
-	print_nodes("", "|_ ", root->m_leftChild, false);
+	print_nodes("", "\033[32m|_ \033[0m", root->m_rightChild, root->m_leftChild != nullptr);
+	print_nodes("", "\033[32m|_ \033[0m", root->m_leftChild, false);
 }
 
 Napis AbstractSyntaxTree::toNapis()

@@ -5,8 +5,7 @@ using namespace std;
 
 int main() {
 
-	AbstractSyntaxTree ast("2+3*8");
-	ast.printTree();
+	AbstractSyntaxTree ast("2+3*----8");
 	
 	return 0;
 }
