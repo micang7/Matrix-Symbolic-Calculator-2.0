@@ -11,5 +11,7 @@ public:
 
 	const Napis& getOpr() const;
 	void setOpr(Napis&& opr);
+
+	Napis toNapisJustNode() const override;
 };
 

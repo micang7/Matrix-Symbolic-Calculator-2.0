@@ -32,6 +32,7 @@ public:
 
 	virtual Napis toNapis() const = 0;
 	virtual Napis toNapisExpand() const;
+	virtual Napis toNapisJustNode() const;
 
 	virtual bool lowerPrecedenceThan(const Napis& opr2) const;
 	virtual bool isNegationSignificant() const;

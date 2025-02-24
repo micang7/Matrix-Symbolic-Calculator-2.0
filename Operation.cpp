@@ -13,3 +13,8 @@ void Operation::setOpr(Napis&& opr)
 {
 	m_opr = std::move(opr);
 }
+
+Napis Operation::toNapisJustNode() const
+{
+	return m_opr;
+}

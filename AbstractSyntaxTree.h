@@ -1,11 +1,14 @@
 #pragma once
 #include "Napis.h"
+#include <string>
 
 class TreeNode;
 
 class AbstractSyntaxTree
 {
 	TreeNode* m_root;
+
+	void print_nodes(const std::string& padding, const std::string& edge, TreeNode* node, bool has_left_sibling) const;
 public:
 	AbstractSyntaxTree(const Napis& infixExpression);
 
@@ -23,6 +26,8 @@ public:
 	void swapSubtrees(TreeNode* subtree1Root, TreeNode* subtree2Root);
 
 	void simplify();
+
+	void printTree(TreeNode* root = nullptr) const;
 
 	Napis toNapis();
 	Napis toNapisExpand();

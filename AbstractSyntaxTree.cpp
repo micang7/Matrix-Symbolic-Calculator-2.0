@@ -1,4 +1,4 @@
-#include "AbstractSyntaxTree.h"
+﻿#include "AbstractSyntaxTree.h"
 
 #include "Parser.h"
 #include "TreeNode.h"
@@ -10,6 +10,25 @@
 #include <iostream>
 
 #define AST_SIMPLIFY
+
+void AbstractSyntaxTree::print_nodes(const std::string& padding, const std::string& edge, TreeNode* node, bool has_left_sibling) const
+{
+	if (node != nullptr) {
+		std::cout << std::endl << padding << edge << node->toNapisJustNode().getStr();
+
+		if ((node->m_leftChild == nullptr) && (node->m_rightChild == nullptr)) {
+			std::cout << std::endl << padding;
+			if (has_left_sibling) {
+				std::cout << "|";
+			}
+		}
+		else {
+			std::string new_padding = padding + (has_left_sibling ? "|  " : "   ");
+			print_nodes(new_padding, "|_ ", node->m_rightChild, node->m_leftChild != nullptr);
+			print_nodes(new_padding, "|_ ", node->m_leftChild, false);
+		}
+	}
+}
 
 AbstractSyntaxTree::AbstractSyntaxTree(const Napis& infixExpression)
 {
@@ -241,6 +260,16 @@ void AbstractSyntaxTree::swapSubtrees(TreeNode* subtree1Root, TreeNode* subtree2
 void AbstractSyntaxTree::simplify()
 {
 	m_root->simplify(*this);
+}
+
+void AbstractSyntaxTree::printTree(TreeNode* root) const
+{
+	if (root == nullptr) root = m_root;
+	if (root == nullptr) return;
+
+	std::cout << root->toNapisJustNode().getStr();
+	print_nodes("", "|_ ", root->m_rightChild, root->m_leftChild != nullptr);
+	print_nodes("", "|_ ", root->m_leftChild, false);
 }
 
 Napis AbstractSyntaxTree::toNapis()

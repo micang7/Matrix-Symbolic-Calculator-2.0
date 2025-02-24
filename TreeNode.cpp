@@ -32,6 +32,11 @@ Napis TreeNode::toNapisExpand() const
 	return toNapis();
 }
 
+Napis TreeNode::toNapisJustNode() const
+{
+	return toNapis();
+}
+
 bool TreeNode::lowerPrecedenceThan(const Napis& opr2) const
 {
 	return false;
