@@ -16,24 +16,31 @@ public:
 	TreeNode* m_rightChild;
 
 	TreeNode();
+	TreeNode(const TreeNode& original);
+	TreeNode(TreeNode&& original) noexcept;
 	virtual ~TreeNode();
 
 	virtual TreeNode* clone() const = 0;
 	virtual TreeNode* nextFreeNode();
 
 	virtual bool simplify(AbstractSyntaxTree& ast);
-	virtual bool simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated = false) = 0;
-	virtual bool simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated = false) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated = false) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated = false) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated = false) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated = false) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated = false) = 0;
+	virtual bool simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr) = 0;
+	virtual bool simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr) = 0;
+	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left) = 0;
+	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left) = 0;
+	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left) = 0;
+	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left) = 0;
+	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left) = 0;
 
+	virtual bool isNegation() const;
+
+	AbstractSyntaxTree operator~() const;
+	
 	virtual Napis toNapis() const = 0;
 	virtual Napis toNapisExpand() const;
 	virtual Napis toNapisJustNode() const;
 
 	virtual bool lowerPrecedenceThan(const Napis& opr2) const;
+	virtual bool equalPrecedenceAs(const Napis& opr2) const;
 	virtual bool isNegationSignificant() const;
 };

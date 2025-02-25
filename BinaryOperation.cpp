@@ -37,7 +37,7 @@ bool BinaryOperation::simplify(AbstractSyntaxTree& ast)
 #endif
 }
 
-bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated)
+bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -45,7 +45,15 @@ bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, b
 	return false;
 }
 
-bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated)
+bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr)
+{
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
+	return opr->m_rightChild->simplify_R(ast, opr, this);
+}
+
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -53,7 +61,7 @@ bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, 
 	return false;
 }
 
-bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated)
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -61,7 +69,7 @@ bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, 
 	return false;
 }
 
-bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated)
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -69,7 +77,7 @@ bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, 
 	return false;
 }
 
-bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated)
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -77,15 +85,7 @@ bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, 
 	return false;
 }
 
-bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated)
+bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -97,8 +97,8 @@ Napis BinaryOperation::toNapis() const
 {
 	bool left_parentheses = m_leftChild->lowerPrecedenceThan(m_opr);
 	bool right_parentheses = (m_rightChild->lowerPrecedenceThan(m_opr) ||
-		(m_opr == '-' && m_rightChild->m_rightChild) ||
-		(m_opr == '/' && m_rightChild->m_rightChild));
+		(m_opr == '-' && m_rightChild->equalPrecedenceAs(m_opr)) ||
+		(m_opr == '/' && m_rightChild->equalPrecedenceAs(m_opr)));
 	return
 		(left_parentheses ? "(" : "") +
 		m_leftChild->toNapis() +
@@ -112,6 +112,11 @@ Napis BinaryOperation::toNapis() const
 bool BinaryOperation::lowerPrecedenceThan(const Napis& opr2) const
 {
 	return precedence(m_opr.getStr()[0]) < precedence(opr2.getStr()[0]);
+}
+
+bool BinaryOperation::equalPrecedenceAs(const Napis& opr2) const
+{
+	return precedence(m_opr.getStr()[0]) == precedence(opr2.getStr()[0]);
 }
 
 bool BinaryOperation::isNegationSignificant() const

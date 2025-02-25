@@ -26,87 +26,93 @@ bool UnaryOperation::simplify(AbstractSyntaxTree& ast)
 	ast.printTree(this, TREE_NODE_COLOR2);
 	if (m_leftChild->simplify(ast)) return true;
 	ast.printTree(this, TREE_NODE_COLOR2);
-	return m_leftChild->simplify_L(ast, this, m_opr == '-');
+	return m_leftChild->simplify_L(ast, this);
 #else
 	if (m_leftChild->simplify(ast)) return true;
-	return m_leftChild->simplify_L(ast, this, m_opr == '-');
+	return m_leftChild->simplify_L(ast, this);
 #endif
 }
 
-bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated)
+bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
 	if (m_opr == '-') {
-		if (leftIsNegated) {
+		if (m_parent->isNegation()) {
 			ast.removeUnaryNode(m_parent);
 			ast.removeUnaryNode(this);
 			return false;
 		}
-		return m_leftChild->simplify_L(ast, opr, true);
+		return m_leftChild->simplify_L(ast, opr);
 	}
 	return false;
 }
 
-bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated)
+bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_L(ast, opr, true);
+	if (m_opr == '-') return m_leftChild->simplify_L(ast, opr);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated)
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated)
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated)
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated)
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated)
+bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, leftIsNegated, left, true);
+	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
 	return false;
+}
+
+bool UnaryOperation::isNegation() const
+{
+	return m_opr == '-';
 }
 
 Napis UnaryOperation::toNapis() const
 {
 	bool inner_parentheses = m_leftChild->isNegationSignificant();
-	bool outer_parentheses = (m_parent->isNegationSignificant() && this == m_parent->m_rightChild);
+	bool outer_parentheses = (m_parent && m_parent->isNegationSignificant() &&
+		this == m_parent->m_rightChild);
 	return
 		(outer_parentheses ? "(" : "") +
 		m_opr +

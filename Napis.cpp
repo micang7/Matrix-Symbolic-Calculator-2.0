@@ -47,6 +47,8 @@ Napis::Napis(Napis&& original) noexcept
 Napis& Napis::operator=(Napis&& napis2) noexcept
 {
 	if (this != &napis2) {
+		delete[] m_str;
+
 		m_len = napis2.m_len;
 		m_str = napis2.m_str;
 

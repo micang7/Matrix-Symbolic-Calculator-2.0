@@ -1,8 +1,23 @@
 #include "TreeNode.h"
 
 #include "AbstractSyntaxTree.h"
+#include "UnaryOperation.h"
 
 TreeNode::TreeNode()
+{
+	m_parent = nullptr;
+	m_leftChild = nullptr;
+	m_rightChild = nullptr;
+}
+
+TreeNode::TreeNode(const TreeNode& original)
+{
+	m_parent = nullptr;
+	m_leftChild = nullptr;
+	m_rightChild = nullptr;
+}
+
+TreeNode::TreeNode(TreeNode&& original) noexcept
 {
 	m_parent = nullptr;
 	m_leftChild = nullptr;
@@ -30,6 +45,16 @@ bool TreeNode::simplify(AbstractSyntaxTree& ast)
 	return false;
 }
 
+bool TreeNode::isNegation() const
+{
+	return false;
+}
+
+AbstractSyntaxTree TreeNode::operator~() const
+{
+	return ~AbstractSyntaxTree(*this);
+}
+
 Napis TreeNode::toNapisExpand() const
 {
 	return toNapis();
@@ -41,6 +66,11 @@ Napis TreeNode::toNapisJustNode() const
 }
 
 bool TreeNode::lowerPrecedenceThan(const Napis& opr2) const
+{
+	return false;
+}
+
+bool TreeNode::equalPrecedenceAs(const Napis& opr2) const
 {
 	return false;
 }

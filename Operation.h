@@ -14,4 +14,3 @@ public:
 
 	Napis toNapisJustNode() const override;
 };
-

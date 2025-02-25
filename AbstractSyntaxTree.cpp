@@ -82,6 +82,8 @@ void AbstractSyntaxTree::printSubtree(TreeNode* subtreeRoot, TreeNode* markNode,
 
 AbstractSyntaxTree::AbstractSyntaxTree(const Napis& infixExpression)
 {
+	std::cout << "Input expression: " << infixExpression << std::endl << std::endl;
+
 	if (!CYK(infixExpression)) throw std::invalid_argument("Error: AST: Invalid expression!");
 
 	Napis expression = infixToPrefix(infixExpression);
@@ -154,11 +156,57 @@ AbstractSyntaxTree::AbstractSyntaxTree(const Napis& infixExpression)
 #else
 	printTree();
 #endif
+	std::cout << "Result:" << std::endl << toNapisExpand() << std::endl << std::endl;
+}
+
+AbstractSyntaxTree::AbstractSyntaxTree()
+{
+	m_root = new Constant(0);
+}
+
+AbstractSyntaxTree::AbstractSyntaxTree(const TreeNode& operand)
+{
+	m_root = operand.clone();
+}
+
+AbstractSyntaxTree::AbstractSyntaxTree(const AbstractSyntaxTree& original)
+{
+	addSubtree(nullptr, original.m_root);
+}
+
+AbstractSyntaxTree& AbstractSyntaxTree::operator=(const AbstractSyntaxTree& original)
+{
+	if (this != &original) {
+		removeSubtree(m_root);
+		addSubtree(nullptr, original.m_root);
+	}
+	return *this;
+}
+
+AbstractSyntaxTree::AbstractSyntaxTree(AbstractSyntaxTree&& original) noexcept
+{
+	m_root = original.m_root;
+	original.m_root = nullptr;
+}
+
+AbstractSyntaxTree& AbstractSyntaxTree::operator=(AbstractSyntaxTree&& original) noexcept
+{
+	if (this != &original) {
+		removeSubtree(m_root);
+		m_root = original.m_root;
+		original.m_root = nullptr;
+	}
+	return *this;
 }
 
 AbstractSyntaxTree::~AbstractSyntaxTree()
 {
 	removeSubtree(m_root);
+}
+
+TreeNode* AbstractSyntaxTree::getRoot() const
+{
+	return m_root;
 }
 
 TreeNode* AbstractSyntaxTree::addChild(TreeNode* parent, const TreeNode& child)
@@ -268,20 +316,24 @@ void AbstractSyntaxTree::removeBinaryNodeAndRightSubtree(TreeNode* node)
 	delete node;
 }
 
-void AbstractSyntaxTree::removeSubtree(TreeNode* subtreeRoot)
+TreeNode* AbstractSyntaxTree::removeSubtree(TreeNode* subtreeRoot)
 {
-	if (!subtreeRoot) return;
+	if (!subtreeRoot) return nullptr;
 
 	if (subtreeRoot->m_leftChild) removeSubtree(subtreeRoot->m_leftChild);
 	if (subtreeRoot->m_rightChild) removeSubtree(subtreeRoot->m_rightChild);
 
-	if (subtreeRoot->m_parent) {
-		if (subtreeRoot->m_parent->m_leftChild == subtreeRoot)
-			subtreeRoot->m_parent->m_leftChild = nullptr;
-		else if (subtreeRoot->m_parent->m_rightChild == subtreeRoot)
-			subtreeRoot->m_parent->m_rightChild = nullptr;
+	TreeNode* parent = subtreeRoot->m_parent;
+
+	if (parent) {
+		if (parent->m_leftChild == subtreeRoot)
+			parent->m_leftChild = nullptr;
+		else if (parent->m_rightChild == subtreeRoot)
+			parent->m_rightChild = nullptr;
 	}
 	delete subtreeRoot;
+
+	return parent;
 }
 
 void AbstractSyntaxTree::swapSubtrees(TreeNode* subtree1Root, TreeNode* subtree2Root)
@@ -330,4 +382,90 @@ Napis AbstractSyntaxTree::toNapis()
 Napis AbstractSyntaxTree::toNapisExpand()
 {
 	return m_root->toNapisExpand();
+}
+
+AbstractSyntaxTree operator~(AbstractSyntaxTree&& ast)
+{
+	AbstractSyntaxTree result(UnaryOperation('-'));
+
+	result.m_root->m_leftChild = ast.m_root;
+	ast.m_root->m_parent = result.m_root;
+	ast.m_root = nullptr;
+	
+	return result;
+}
+
+AbstractSyntaxTree operator+(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast2)
+{
+	AbstractSyntaxTree result(BinaryOperation('+'));
+	
+	result.m_root->m_leftChild = ast1.m_root;
+	ast1.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
+	
+	result.m_root->m_rightChild = ast2.m_root;
+	ast2.m_root->m_parent = result.m_root;
+	ast2.m_root = nullptr;
+	
+	return result;
+}
+
+AbstractSyntaxTree operator-(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast2)
+{
+	AbstractSyntaxTree result(BinaryOperation('-'));
+
+	result.m_root->m_leftChild = ast1.m_root;
+	ast1.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
+
+	result.m_root->m_rightChild = ast2.m_root;
+	ast2.m_root->m_parent = result.m_root;
+	ast2.m_root = nullptr;
+
+	return result;
+}
+
+AbstractSyntaxTree operator*(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast2)
+{
+	AbstractSyntaxTree result(BinaryOperation('*'));
+
+	result.m_root->m_leftChild = ast1.m_root;
+	ast1.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
+
+	result.m_root->m_rightChild = ast2.m_root;
+	ast2.m_root->m_parent = result.m_root;
+	ast2.m_root = nullptr;
+
+	return result;
+}
+
+AbstractSyntaxTree operator/(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast2)
+{
+	AbstractSyntaxTree result(BinaryOperation('/'));
+
+	result.m_root->m_leftChild = ast1.m_root;
+	ast1.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
+
+	result.m_root->m_rightChild = ast2.m_root;
+	ast2.m_root->m_parent = result.m_root;
+	ast2.m_root = nullptr;
+
+	return result;
+}
+
+AbstractSyntaxTree operator^(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast2)
+{
+	AbstractSyntaxTree result(BinaryOperation('^'));
+
+	result.m_root->m_leftChild = ast1.m_root;
+	ast1.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
+
+	result.m_root->m_rightChild = ast2.m_root;
+	ast2.m_root->m_parent = result.m_root;
+	ast2.m_root = nullptr;
+
+	return result;
 }
