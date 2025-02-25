@@ -17,7 +17,7 @@ void AbstractSyntaxTree::printSubtree(TreeNode* subtreeRoot, TreeNode* markNode,
 
 	if (subtreeRoot == m_root) {
 		printSubtree(subtreeRoot->m_rightChild, markNode, markColor, false,
-			padding + (subtreeRootNapis.getLen() + 1) * Napis(' '));
+			padding + (subtreeRootNapis.getLen() + 2) * Napis(' '));
 
 		if (subtreeRoot == markNode) {
 			std::cout << ' ' << markColor << subtreeRootNapis << TREE_RESET_COLOR;
@@ -32,7 +32,7 @@ void AbstractSyntaxTree::printSubtree(TreeNode* subtreeRoot, TreeNode* markNode,
 		else std::cout << std::endl;
 
 		printSubtree(subtreeRoot->m_leftChild, markNode, markColor, subtreeRoot->m_rightChild,
-			padding + (subtreeRootNapis.getLen() + 1) * Napis(' '));
+			padding + (subtreeRootNapis.getLen() + 2) * Napis(' '));
 	}
 	else {
 		if (subtreeRoot->m_parent->m_leftChild == subtreeRoot) {
@@ -62,10 +62,10 @@ void AbstractSyntaxTree::printSubtree(TreeNode* subtreeRoot, TreeNode* markNode,
 
 			std::cout << padding << TREE_COLOR << TREE_RIGHT << TREE_RESET_COLOR << ' ';
 			if (subtreeRoot == markNode) {
-				std::cout << ' ' << markColor << subtreeRootNapis << TREE_RESET_COLOR;
+				std::cout << markColor << subtreeRootNapis << TREE_RESET_COLOR;
 				if (!subtreeRoot->m_leftChild) std::cout << "\033[30m.\033[0m";
 			}
-			else std::cout << ' ' << subtreeRootNapis;
+			else std::cout << subtreeRootNapis;
 			if (subtreeRoot->m_leftChild) {
 				if (subtreeRoot->m_rightChild)
 					std::cout << ' ' << TREE_COLOR << TREE_BPARENT << TREE_RESET_COLOR << std::endl;
