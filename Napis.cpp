@@ -1,8 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Napis.h"
 
-#include <iostream>
-
 Napis::Napis(const char* str)
 {
 	m_len = strlen(str);
@@ -442,4 +440,25 @@ char& Napis::operator[](int index)
 		throw std::out_of_range("Error: Napis::operator[]: Index out of range!");
 
 	return m_str[index];
+}
+
+std::ostream& operator<<(std::ostream& out, const Napis& napis)
+{
+	return out << napis.m_str;
+}
+
+Napis operator*(int repeat, const Napis& pattern)
+{
+	if (pattern.m_len == 0) return "";
+
+	char* result = new char[repeat * pattern.m_len + 1];
+
+	strcpy(result, pattern.m_str);
+	for (int i = 1; i < repeat; i++)
+		strcat(result, pattern.m_str);
+
+	Napis napis(result);
+	delete[] result;
+
+	return napis;
 }

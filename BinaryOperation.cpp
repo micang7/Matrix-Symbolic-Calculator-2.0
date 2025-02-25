@@ -23,42 +23,74 @@ TreeNode* BinaryOperation::nextFreeNode()
 
 bool BinaryOperation::simplify(AbstractSyntaxTree& ast)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this, TREE_NODE_COLOR2);
+	if (m_leftChild->simplify(ast)) return true;
+	ast.printTree(this, TREE_NODE_COLOR2);
+	if (m_rightChild->simplify(ast)) return true;
+	ast.printTree(this, TREE_NODE_COLOR2);
+	bool result = m_leftChild->simplify_L(ast, this);
+	ast.printTree(this, TREE_NODE_COLOR2);
+	return result;
+#else
 	if (m_leftChild->simplify(ast)) return true;
 	if (m_rightChild->simplify(ast)) return true;
+#endif
 }
 
 bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool BinaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool BinaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 

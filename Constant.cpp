@@ -19,36 +19,57 @@ TreeNode* Constant::clone() const
 
 bool Constant::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr, bool leftIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool Constant::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Constant* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Matrix* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, Variable* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, BinaryOperation* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 
 bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, bool leftIsNegated, UnaryOperation* left, bool rightIsNegated)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
 	return false;
 }
 

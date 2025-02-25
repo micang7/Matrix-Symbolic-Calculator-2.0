@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 class Napis
 {
 	char* m_str;
@@ -57,5 +59,9 @@ public:
 	
 	char operator[](int index) const;
 	char& operator[](int index);
+
+	friend std::ostream& operator<<(std::ostream& out, const Napis& napis);
+
+	friend Napis operator*(int repeat, const Napis& pattern);
 };
 

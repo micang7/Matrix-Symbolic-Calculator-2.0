@@ -24,6 +24,9 @@ TreeNode* TreeNode::nextFreeNode()
 
 bool TreeNode::simplify(AbstractSyntaxTree& ast)
 {
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this, TREE_NODE_COLOR2);
+#endif
 	return false;
 }
 

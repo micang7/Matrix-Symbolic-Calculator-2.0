@@ -1,6 +1,6 @@
 #pragma once
+#include "AST_Settings.h"
 #include "Napis.h"
-#include <string>
 
 class TreeNode;
 
@@ -8,7 +8,7 @@ class AbstractSyntaxTree
 {
 	TreeNode* m_root;
 
-	void print_nodes(const std::string& padding, const std::string& edge, TreeNode* node, bool has_left_sibling) const;
+	void printSubtree(TreeNode* subtreeRoot, TreeNode* markNode = nullptr, const char* markColor = "", bool hasSibling = true, const Napis& padding = "") const;
 public:
 	AbstractSyntaxTree(const Napis& infixExpression);
 
@@ -27,7 +27,7 @@ public:
 
 	void simplify();
 
-	void printTree(TreeNode* root = nullptr) const;
+	void printTree(TreeNode* markNode = nullptr, const char* markColor = TREE_NODE_COLOR1, TreeNode* root = nullptr) const;
 
 	Napis toNapis();
 	Napis toNapisExpand();
