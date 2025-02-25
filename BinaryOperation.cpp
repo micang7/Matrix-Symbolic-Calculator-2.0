@@ -29,12 +29,11 @@ bool BinaryOperation::simplify(AbstractSyntaxTree& ast)
 	ast.printTree(this, TREE_NODE_COLOR2);
 	if (m_rightChild->simplify(ast)) return true;
 	ast.printTree(this, TREE_NODE_COLOR2);
-	bool result = m_leftChild->simplify_L(ast, this);
-	ast.printTree(this, TREE_NODE_COLOR2);
-	return result;
+	return m_leftChild->simplify_L(ast, this);
 #else
 	if (m_leftChild->simplify(ast)) return true;
 	if (m_rightChild->simplify(ast)) return true;
+	return m_leftChild->simplify_L(ast, this);
 #endif
 }
 
