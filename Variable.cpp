@@ -16,60 +16,14 @@ TreeNode* Variable::clone() const
 	return new Variable(*this);
 }
 
-bool Variable::evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr)
+TreeNode* Variable::shift()
 {
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
+	return new Variable(std::move(*this));
 }
 
-bool Variable::evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr)
+AbstractSyntaxTree Variable::compute1(const Napis& opr, TreeNode* right) const
 {
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return opr->m_rightChild->evaluate_part2(ast, opr, this);
-}
-
-bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
+	return right->compute2(*this, opr);
 }
 
 Napis Variable::toNapis() const

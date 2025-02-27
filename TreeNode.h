@@ -21,20 +21,22 @@ public:
 	virtual ~TreeNode();
 
 	virtual TreeNode* clone() const = 0;
+	virtual TreeNode* shift() = 0;
+
 	virtual TreeNode* nextFreeNode();
 
-	virtual bool simplify(AbstractSyntaxTree& ast);
-
-	virtual bool evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr) = 0;
-	
-	virtual bool evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr) = 0;
-	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left) = 0;
-	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left) = 0;
-	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left) = 0;
-	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left) = 0;
-	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left) = 0;
-
 	virtual bool isNegation() const;
+
+	virtual void reorganise(AbstractSyntaxTree& ast);
+
+	virtual void evaluate(AbstractSyntaxTree& ast);
+	virtual AbstractSyntaxTree compute(const Napis& opr) const;
+	virtual AbstractSyntaxTree compute1(const Napis& opr, TreeNode* right) const = 0;
+	virtual AbstractSyntaxTree compute2(const Constant& left, const Napis& opr) const;
+	virtual AbstractSyntaxTree compute2(const Matrix& left, const Napis& opr) const;
+	virtual AbstractSyntaxTree compute2(const Variable& left, const Napis& opr) const;
+	virtual AbstractSyntaxTree compute2(const BinaryOperation& left, const Napis& opr) const;
+	virtual AbstractSyntaxTree compute2(const UnaryOperation& left, const Napis& opr) const;
 	
 	virtual Napis toNapis() const = 0;
 	virtual Napis toNapisExpand() const;

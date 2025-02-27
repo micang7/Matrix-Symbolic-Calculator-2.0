@@ -14,6 +14,11 @@ TreeNode* BinaryOperation::clone() const
 	return new BinaryOperation(*this);
 }
 
+TreeNode* BinaryOperation::shift()
+{
+	return new BinaryOperation(std::move(*this));
+}
+
 TreeNode* BinaryOperation::nextFreeNode()
 {
 	if (!m_leftChild || !m_rightChild) return this;
@@ -21,75 +26,38 @@ TreeNode* BinaryOperation::nextFreeNode()
 	return nullptr;
 }
 
-bool BinaryOperation::simplify(AbstractSyntaxTree& ast)
+void BinaryOperation::reorganise(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this, TREE_NODE_COLOR2);
-	if (m_leftChild->simplify(ast)) return true;
-	ast.printTree(this, TREE_NODE_COLOR2);
-	if (m_rightChild->simplify(ast)) return true;
-	ast.printTree(this, TREE_NODE_COLOR2);
-	return m_leftChild->evaluate_part1(ast, this);
+	ast.printTree(this);
+	m_leftChild->reorganise(ast);
+	ast.printTree(this);
+	m_rightChild->reorganise(ast);
 #else
-	if (m_leftChild->simplify(ast)) return true;
-	if (m_rightChild->simplify(ast)) return true;
+	m_leftChild->reorganise(ast);
+	m_rightChild->reorganise(ast);
 #endif
 }
 
-bool BinaryOperation::evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr)
+void BinaryOperation::evaluate(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
+	ast.printTree(this, TREE_NODE_COLOR2);
+	m_leftChild->evaluate(ast);
+	ast.printTree(this, TREE_NODE_COLOR2);
+	m_rightChild->evaluate(ast);
+	ast.printTree(this, TREE_NODE_COLOR2);
+	ast.replaceSubtree(this, m_leftChild->compute1(m_opr, m_rightChild));
+#else
+	m_leftChild->simplify(ast);
+	m_rightChild->simplify(ast);
+	ast.replaceSubtree(this, m_leftChild->evaluate1(m_opr, m_rightChild));
 #endif
-	return false;
 }
 
-bool BinaryOperation::evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr)
+AbstractSyntaxTree BinaryOperation::compute1(const Napis& opr, TreeNode* right) const
 {
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return opr->m_rightChild->evaluate_part2(ast, opr, this);
-}
-
-bool BinaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool BinaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool BinaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool BinaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool BinaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
+	return right->compute2(*this, opr);
 }
 
 Napis BinaryOperation::toNapis() const

@@ -37,17 +37,53 @@ TreeNode* TreeNode::nextFreeNode()
 	return nullptr;
 }
 
-bool TreeNode::simplify(AbstractSyntaxTree& ast)
+bool TreeNode::isNegation() const
+{
+	return false;
+}
+
+void TreeNode::reorganise(AbstractSyntaxTree& ast)
+{
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
+}
+
+void TreeNode::evaluate(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this, TREE_NODE_COLOR2);
 #endif
-	return false;
 }
 
-bool TreeNode::isNegation() const
+AbstractSyntaxTree TreeNode::compute(const Napis& opr) const
 {
-	return false;
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::compute2(const Constant& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::compute2(const Matrix& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::compute2(const Variable& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::compute2(const BinaryOperation& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::compute2(const UnaryOperation& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
 }
 
 Napis TreeNode::toNapisExpand() const
