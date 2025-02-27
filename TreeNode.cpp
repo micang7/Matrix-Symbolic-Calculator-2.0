@@ -50,11 +50,6 @@ bool TreeNode::isNegation() const
 	return false;
 }
 
-AbstractSyntaxTree TreeNode::operator~() const
-{
-	return ~AbstractSyntaxTree(*this);
-}
-
 Napis TreeNode::toNapisExpand() const
 {
 	return toNapis();

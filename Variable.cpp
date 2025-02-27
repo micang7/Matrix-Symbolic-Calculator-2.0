@@ -16,7 +16,7 @@ TreeNode* Variable::clone() const
 	return new Variable(*this);
 }
 
-bool Variable::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
+bool Variable::evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -24,23 +24,15 @@ bool Variable::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
 	return false;
 }
 
-bool Variable::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr)
+bool Variable::evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	return opr->m_rightChild->simplify_R(ast, opr, this);
+	return opr->m_rightChild->evaluate_part2(ast, opr, this);
 }
 
-bool Variable::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Variable::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
+bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -48,7 +40,7 @@ bool Variable::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix*
 	return false;
 }
 
-bool Variable::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
+bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -56,7 +48,7 @@ bool Variable::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variabl
 	return false;
 }
 
-bool Variable::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
+bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -64,7 +56,15 @@ bool Variable::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryO
 	return false;
 }
 
-bool Variable::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
+bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
+{
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
+	return false;
+}
+
+bool Variable::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);

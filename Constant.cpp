@@ -18,7 +18,7 @@ TreeNode* Constant::clone() const
 	return new Constant(*this);
 }
 
-bool Constant::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
+bool Constant::evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -26,15 +26,15 @@ bool Constant::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
 	return false;
 }
 
-bool Constant::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr)
+bool Constant::evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	return opr->m_rightChild->simplify_R(ast, opr, this);
+	return opr->m_rightChild->evaluate_part2(ast, opr, this);
 }
 
-bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
+bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -51,11 +51,10 @@ bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constan
 		result = *left / *this;
 	else if (operation == '^')
 		result = *left ^ *this;
-	ast.addSubtree(ast.removeSubtree(opr), result.getRoot());
 	return false;
 }
 
-bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
+bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -63,7 +62,7 @@ bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix*
 	return false;
 }
 
-bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
+bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -71,7 +70,7 @@ bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variabl
 	return false;
 }
 
-bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
+bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -79,7 +78,7 @@ bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryO
 	return false;
 }
 
-bool Constant::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
+bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);

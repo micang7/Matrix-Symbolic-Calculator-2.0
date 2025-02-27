@@ -26,80 +26,71 @@ bool UnaryOperation::simplify(AbstractSyntaxTree& ast)
 	ast.printTree(this, TREE_NODE_COLOR2);
 	if (m_leftChild->simplify(ast)) return true;
 	ast.printTree(this, TREE_NODE_COLOR2);
-	return m_leftChild->simplify_L(ast, this);
+	return m_leftChild->evaluate(ast, this);
 #else
 	if (m_leftChild->simplify(ast)) return true;
-	return m_leftChild->simplify_L(ast, this);
 #endif
 }
 
-bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
+bool UnaryOperation::evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') {
-		if (m_parent->isNegation()) {
-			ast.removeUnaryNode(m_parent);
-			ast.removeUnaryNode(this);
-			return false;
-		}
-		return m_leftChild->simplify_L(ast, opr);
-	}
 	return false;
 }
 
-bool UnaryOperation::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr)
+bool UnaryOperation::evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_L(ast, opr);
+	if (m_opr == '-') return m_leftChild->evaluate_part1(ast, opr);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
+bool UnaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
+	if (m_opr == '-') return m_leftChild->evaluate_part2(ast, opr, left);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
+bool UnaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
+	if (m_opr == '-') return m_leftChild->evaluate_part2(ast, opr, left);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
+bool UnaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
+	if (m_opr == '-') return m_leftChild->evaluate_part2(ast, opr, left);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
+bool UnaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
+	if (m_opr == '-') return m_leftChild->evaluate_part2(ast, opr, left);
 	return false;
 }
 
-bool UnaryOperation::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
+bool UnaryOperation::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	if (m_opr == '-') return m_leftChild->simplify_R(ast, opr, left);
+	if (m_opr == '-') return m_leftChild->evaluate_part2(ast, opr, left);
 	return false;
 }
 

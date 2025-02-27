@@ -24,17 +24,17 @@ public:
 	virtual TreeNode* nextFreeNode();
 
 	virtual bool simplify(AbstractSyntaxTree& ast);
-	virtual bool simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr) = 0;
-	virtual bool simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left) = 0;
-	virtual bool simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left) = 0;
+
+	virtual bool evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr) = 0;
+	
+	virtual bool evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr) = 0;
+	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left) = 0;
+	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left) = 0;
+	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left) = 0;
+	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left) = 0;
+	virtual bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left) = 0;
 
 	virtual bool isNegation() const;
-
-	AbstractSyntaxTree operator~() const;
 	
 	virtual Napis toNapis() const = 0;
 	virtual Napis toNapisExpand() const;

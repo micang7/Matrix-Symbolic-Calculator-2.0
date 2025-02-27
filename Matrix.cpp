@@ -86,7 +86,7 @@ TreeNode* Matrix::clone() const
 	return new Matrix(*this);
 }
 
-bool Matrix::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
+bool Matrix::evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -94,23 +94,15 @@ bool Matrix::simplify_L(AbstractSyntaxTree& ast, UnaryOperation* opr)
 	return false;
 }
 
-bool Matrix::simplify_L(AbstractSyntaxTree& ast, BinaryOperation* opr)
+bool Matrix::evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
-	return opr->m_rightChild->simplify_R(ast, opr, this);
+	return opr->m_rightChild->evaluate_part2(ast, opr, this);
 }
 
-bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
+bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -118,7 +110,7 @@ bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* l
 	return false;
 }
 
-bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
+bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -126,7 +118,7 @@ bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable*
 	return false;
 }
 
-bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
+bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -134,7 +126,15 @@ bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOpe
 	return false;
 }
 
-bool Matrix::simplify_R(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
+bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
+{
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
+	return false;
+}
+
+bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
