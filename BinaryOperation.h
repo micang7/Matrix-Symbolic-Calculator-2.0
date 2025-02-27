@@ -7,18 +7,13 @@ public:
 	BinaryOperation(const Napis& opr);
 
 	TreeNode* clone() const override;
+	TreeNode* shift() override;
+
 	TreeNode* nextFreeNode() override;
 
-	bool simplify(AbstractSyntaxTree& ast) override;
+	void simplify(AbstractSyntaxTree& ast) override;
 
-	bool evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr) override;
-
-	bool evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left) override;
+	AbstractSyntaxTree evaluate1(const Napis& opr, TreeNode* right) const override;
 
 	Napis toNapis() const override;
 

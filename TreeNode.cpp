@@ -37,12 +37,41 @@ TreeNode* TreeNode::nextFreeNode()
 	return nullptr;
 }
 
-bool TreeNode::simplify(AbstractSyntaxTree& ast)
+void TreeNode::simplify(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this, TREE_NODE_COLOR2);
+	ast.printTree(this);
 #endif
-	return false;
+}
+
+AbstractSyntaxTree TreeNode::evaluate(const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::evaluate2(const Constant& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::evaluate2(const Matrix& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::evaluate2(const Variable& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::evaluate2(const BinaryOperation& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
+}
+
+AbstractSyntaxTree TreeNode::evaluate2(const UnaryOperation& left, const Napis& opr) const
+{
+	return AbstractSyntaxTree();
 }
 
 bool TreeNode::isNegation() const

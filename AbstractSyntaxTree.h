@@ -30,7 +30,10 @@ public:
 	TreeNode* addChild(TreeNode* parent, const TreeNode& child);
 	TreeNode* addChild(TreeNode* parent, TreeNode&& child);
 
+	void removeOneChildNode(TreeNode* node);
+
 	void addSubtree(TreeNode* parent, const TreeNode* subtreeRoot);
+	void attachSubtree(TreeNode* parent, TreeNode* subtreeRoot);
 
 	void replaceSubtree(TreeNode* oldSubtreeRoot, const AbstractSyntaxTree& newSubtree);
 	void replaceSubtree(TreeNode* oldSubtreeRoot, AbstractSyntaxTree&& newSubtree);

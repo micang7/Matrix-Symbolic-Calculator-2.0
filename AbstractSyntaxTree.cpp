@@ -227,16 +227,35 @@ TreeNode* AbstractSyntaxTree::addChild(TreeNode* parent, const TreeNode& child)
 
 TreeNode* AbstractSyntaxTree::addChild(TreeNode* parent, TreeNode&& child)
 {
-	if (!parent) return m_root = &child;
+	TreeNode* copy = child.shift();
 
-	child.m_parent = parent;
+	if (!parent) return m_root = copy;
+
+	copy->m_parent = parent;
 
 	if (parent->m_leftChild)
-		parent->m_rightChild = &child;
+		parent->m_rightChild = copy;
 	else
-		parent->m_leftChild = &child;
+		parent->m_leftChild = copy;
 
-	return &child;
+	return copy;
+}
+
+void AbstractSyntaxTree::removeOneChildNode(TreeNode* node)
+{
+	if (!node) return;
+
+	node->m_leftChild->m_parent = node->m_parent;
+
+	if (node->m_parent) {
+		if (node->m_parent->m_leftChild == node)
+			node->m_parent->m_leftChild = node->m_leftChild;
+		else
+			node->m_parent->m_rightChild = node->m_leftChild;
+	}
+	else m_root = node->m_leftChild;
+
+	delete node;
 }
 
 void AbstractSyntaxTree::addSubtree(TreeNode* parent, const TreeNode* subtreeRoot)
@@ -259,6 +278,26 @@ void AbstractSyntaxTree::addSubtree(TreeNode* parent, const TreeNode* subtreeRoo
 	if (subtreeRoot->m_rightChild) addSubtree(copy, subtreeRoot->m_rightChild);
 }
 
+void AbstractSyntaxTree::attachSubtree(TreeNode* parent, TreeNode* subtreeRoot)
+{
+	if (!subtreeRoot) return;
+
+	TreeNode* copy = subtreeRoot->shift();
+
+	if (parent) {
+		copy->m_parent = parent;
+
+		if (parent->m_leftChild)
+			parent->m_rightChild = copy;
+		else
+			parent->m_leftChild = copy;
+	}
+	else m_root = copy;
+
+	if (subtreeRoot->m_leftChild) attachSubtree(copy, subtreeRoot->m_leftChild);
+	if (subtreeRoot->m_rightChild) attachSubtree(copy, subtreeRoot->m_rightChild);
+}
+
 void AbstractSyntaxTree::replaceSubtree(TreeNode* oldSubtreeRoot, const AbstractSyntaxTree& newSubtree)
 {
 	TreeNode* newSubtreeRoot = newSubtree.getRoot();
@@ -278,15 +317,7 @@ void AbstractSyntaxTree::replaceSubtree(TreeNode* oldSubtreeRoot, AbstractSyntax
 	TreeNode* parent = oldSubtreeRoot->m_parent;
 
 	removeSubtree(oldSubtreeRoot);
-	if (parent) {
-		newSubtreeRoot->m_parent = parent;
-
-		if (parent->m_leftChild)
-			parent->m_rightChild = newSubtreeRoot;
-		else
-			parent->m_leftChild = newSubtreeRoot;
-	}
-	else m_root = newSubtreeRoot;
+	attachSubtree(parent, newSubtreeRoot);
 }
 
 void AbstractSyntaxTree::removeSubtree(TreeNode* subtreeRoot)
@@ -328,12 +359,15 @@ Napis AbstractSyntaxTree::toNapisExpand()
 
 AbstractSyntaxTree operator~(AbstractSyntaxTree&& ast)
 {
-	AbstractSyntaxTree result(UnaryOperation('-'));
-
-	result.m_root->m_leftChild = ast.m_root;
-	ast.m_root->m_parent = result.m_root;
+	AbstractSyntaxTree result;
+	
+	if (ast.m_root->isNegation())
+		result.attachSubtree(nullptr, ast.m_root->m_leftChild);
+	else
+		result.attachSubtree(result.addChild(nullptr, UnaryOperation('-')), ast.m_root);
+	
 	ast.m_root = nullptr;
-
+	
 	return result;
 }
 
@@ -341,12 +375,10 @@ AbstractSyntaxTree operator+(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 {
 	AbstractSyntaxTree result(BinaryOperation('+'));
 
-	result.m_root->m_leftChild = ast1.m_root;
-	ast1.m_root->m_parent = result.m_root;
-	ast1.m_root = nullptr;
+	result.attachSubtree(result.m_root, ast1.m_root);
+	result.attachSubtree(result.m_root, ast2.m_root);
 
-	result.m_root->m_rightChild = ast2.m_root;
-	ast2.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
 
 	return result;
@@ -356,12 +388,10 @@ AbstractSyntaxTree operator-(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 {
 	AbstractSyntaxTree result(BinaryOperation('-'));
 
-	result.m_root->m_leftChild = ast1.m_root;
-	ast1.m_root->m_parent = result.m_root;
-	ast1.m_root = nullptr;
+	result.attachSubtree(result.m_root, ast1.m_root);
+	result.attachSubtree(result.m_root, ast2.m_root);
 
-	result.m_root->m_rightChild = ast2.m_root;
-	ast2.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
 
 	return result;
@@ -371,12 +401,10 @@ AbstractSyntaxTree operator*(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 {
 	AbstractSyntaxTree result(BinaryOperation('*'));
 
-	result.m_root->m_leftChild = ast1.m_root;
-	ast1.m_root->m_parent = result.m_root;
-	ast1.m_root = nullptr;
+	result.attachSubtree(result.m_root, ast1.m_root);
+	result.attachSubtree(result.m_root, ast2.m_root);
 
-	result.m_root->m_rightChild = ast2.m_root;
-	ast2.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
 
 	return result;
@@ -386,12 +414,10 @@ AbstractSyntaxTree operator/(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 {
 	AbstractSyntaxTree result(BinaryOperation('/'));
 
-	result.m_root->m_leftChild = ast1.m_root;
-	ast1.m_root->m_parent = result.m_root;
-	ast1.m_root = nullptr;
+	result.attachSubtree(result.m_root, ast1.m_root);
+	result.attachSubtree(result.m_root, ast2.m_root);
 
-	result.m_root->m_rightChild = ast2.m_root;
-	ast2.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
 
 	return result;
@@ -401,12 +427,10 @@ AbstractSyntaxTree operator^(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 {
 	AbstractSyntaxTree result(BinaryOperation('^'));
 
-	result.m_root->m_leftChild = ast1.m_root;
-	ast1.m_root->m_parent = result.m_root;
-	ast1.m_root = nullptr;
+	result.attachSubtree(result.m_root, ast1.m_root);
+	result.attachSubtree(result.m_root, ast2.m_root);
 
-	result.m_root->m_rightChild = ast2.m_root;
-	ast2.m_root->m_parent = result.m_root;
+	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
 
 	return result;

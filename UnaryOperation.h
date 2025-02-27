@@ -7,18 +7,20 @@ public:
 	UnaryOperation(const Napis& opr);
 
 	TreeNode* clone() const override;
+	TreeNode* shift() override;
+
 	TreeNode* nextFreeNode() override;
 
-	bool simplify(AbstractSyntaxTree& ast) override;
+	void simplify(AbstractSyntaxTree& ast) override;
 
-	bool evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr) override;
+	AbstractSyntaxTree evaluate(const Napis& opr) const override;
 
-	bool evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left) override;
-	bool evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left) override;
+	AbstractSyntaxTree evaluate1(const Napis& opr, TreeNode* right) const override;
+	AbstractSyntaxTree evaluate2(const Constant& left, const Napis& opr) const override;
+	AbstractSyntaxTree evaluate2(const Matrix& left, const Napis& opr) const override;
+	AbstractSyntaxTree evaluate2(const Variable& left, const Napis& opr) const override;
+	AbstractSyntaxTree evaluate2(const BinaryOperation& left, const Napis& opr) const override;
+	AbstractSyntaxTree evaluate2(const UnaryOperation& left, const Napis& opr) const override;
 
 	bool isNegation() const override;
 

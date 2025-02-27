@@ -81,65 +81,52 @@ Matrix::Matrix(int rows, int cols, const Napis& expression)
 	}
 }
 
+Matrix::Matrix(const Matrix& original)
+{
+	m_rows = original.m_rows;
+	m_cols = original.m_cols;
+	m_matrix = new AbstractSyntaxTree * *[m_rows];
+	for (int r = 0; r < m_rows; r++) {
+		m_matrix[r] = new AbstractSyntaxTree * [m_cols];
+		for (int c = 0; c < m_cols; c++)
+			m_matrix[r][c] = new AbstractSyntaxTree(*original.m_matrix[r][c]);
+	}
+}
+
+Matrix::Matrix(Matrix&& original) noexcept
+{
+	m_rows = original.m_rows;
+	m_cols = original.m_cols;
+	m_matrix = original.m_matrix;
+
+	original.m_rows = 0;
+	original.m_cols = 0;
+	original.m_matrix = nullptr;
+}
+
+Matrix::~Matrix()
+{
+	for (int r = 0; r < m_rows; r++) {
+		for (int c = 0; c < m_cols; c++)
+			delete m_matrix[r][c];
+		delete[] m_matrix[r];
+	}
+	delete[] m_matrix;
+}
+
 TreeNode* Matrix::clone() const
 {
 	return new Matrix(*this);
 }
 
-bool Matrix::evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr)
+TreeNode* Matrix::shift()
 {
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
+	return new Matrix(std::move(*this));
 }
 
-bool Matrix::evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr)
+AbstractSyntaxTree Matrix::evaluate1(const Napis& opr, TreeNode* right) const
 {
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return opr->m_rightChild->evaluate_part2(ast, opr, this);
-}
-
-bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Matrix::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
+	return right->evaluate2(*this, opr);
 }
 
 Napis Matrix::toNapis() const

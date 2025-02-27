@@ -18,72 +18,50 @@ TreeNode* Constant::clone() const
 	return new Constant(*this);
 }
 
-bool Constant::evaluate(AbstractSyntaxTree& ast, UnaryOperation* opr)
+TreeNode* Constant::shift()
 {
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
+	return new Constant(std::move(*this));
 }
 
-bool Constant::evaluate_part1(AbstractSyntaxTree& ast, BinaryOperation* opr)
+AbstractSyntaxTree Constant::evaluate1(const Napis& opr, TreeNode* right) const
 {
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return opr->m_rightChild->evaluate_part2(ast, opr, this);
+	// 1 * x = x;   0 + x = x;   reduction
+	if ((m_val == 1 && opr == '*') ||
+		(m_val == 0 && opr == '+'))
+		return AbstractSyntaxTree(*right);
+
+	// 0 - x = -x;   reduction
+	if (m_val == 0 && opr == '-')
+		return ~AbstractSyntaxTree(*right);
+
+	// 0 * x = 0;   0 / x = 0   reduction
+	if (m_val == 0 && (opr == '*' || opr == '/'))
+		return AbstractSyntaxTree(Constant(0));
+
+	return right->evaluate2(*this, opr);
 }
 
-bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Constant* left)
+AbstractSyntaxTree Constant::evaluate2(const Constant& left, const Napis& opr) const
 {
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	Napis operation = opr->getOpr();
-	AbstractSyntaxTree result;
-	if (operation == '+')
-		result = *left + *this;
-	else if (operation == '-')
-		result = *left - *this;
-	else if (operation == '*')
-		result = *left * *this;
-	else if (operation == '/')
-		result = *left / *this;
-	else if (operation == '^')
-		result = *left ^ *this;
-	return false;
-}
+	// x * 1 = x;   x / 1 = x   x + 0 = x;   x - 0 = x;   reduction
+	if ((m_val == 1 && (opr == '*' || opr == '/')) ||
+		(m_val == 0 && (opr == '+' || opr == '-')))
+		return AbstractSyntaxTree(left);
 
-bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Matrix* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
+	// x * 0 = 0;   reduction
+	if (m_val == 0 && opr == '*')
+		return AbstractSyntaxTree(Constant(0));
 
-bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, Variable* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
+	// division by zero error
+	if (m_val == 0 && opr == '/')
+		throw std::runtime_error("Error: AST: Division by zero!");
 
-bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, BinaryOperation* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
-}
-
-bool Constant::evaluate_part2(AbstractSyntaxTree& ast, BinaryOperation* opr, UnaryOperation* left)
-{
-#ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
-#endif
-	return false;
+	if (opr == '+') return left + *this;
+	if (opr == '-') return left - *this;
+	if (opr == '*') return left * *this;
+	if (opr == '/') return left / *this;
+	if (opr == '^') return left ^ *this;
+	return AbstractSyntaxTree();
 }
 
 AbstractSyntaxTree Constant::operator+(const Constant& constant2) const
