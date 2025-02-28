@@ -10,8 +10,8 @@ public:
 	TreeNode* clone() const override;
 	TreeNode* shift() override;
 
-	AbstractSyntaxTree evaluate1(const Napis& opr, TreeNode* right) const override;
-	AbstractSyntaxTree evaluate2(const Constant& left, const Napis& opr) const override;
+	AbstractSyntaxTree compute1(const Napis& opr, TreeNode* right) const override;
+	AbstractSyntaxTree compute2(const Constant& left, const Napis& opr) const override;
 
 	AbstractSyntaxTree operator+(const Constant& constant2) const;
 	AbstractSyntaxTree operator-(const Constant& constant2) const;

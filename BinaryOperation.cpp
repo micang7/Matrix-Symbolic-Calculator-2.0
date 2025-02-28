@@ -26,25 +26,95 @@ TreeNode* BinaryOperation::nextFreeNode()
 	return nullptr;
 }
 
-void BinaryOperation::simplify(AbstractSyntaxTree& ast)
+void BinaryOperation::arrange(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
-	m_leftChild->simplify(ast);
-	ast.printTree(this);
-	m_rightChild->simplify(ast);
-	ast.printTree(this);
-	ast.replaceSubtree(this, m_leftChild->evaluate1(m_opr, m_rightChild));
+	// x + (-y) = x - y;   x - (-y) = x + y;   reduction
+	if ((m_opr == '+' || m_opr == '-') && m_rightChild->isNegation()) {
+		ast.removeOneChildNode(m_rightChild);
+		m_opr = (m_opr == '+' ? '-' : '+');
+		ast.printTree(this);
+	}
+
+	TreeNode* nodeAtThisPosition = this;
+
+	// x + (y + z) = x + y + z;   reduction
+	if (m_rightChild->equalPrecedenceAs(m_opr, true)) {
+		nodeAtThisPosition = ast.reverseRelationship(this, RIGHT_CHILD_RIGHT_SUBTREE);
+		ast.printTree(nodeAtThisPosition);
+	}
+
+	nodeAtThisPosition->m_rightChild->arrange(ast);
+	ast.printTree(nodeAtThisPosition);
+
+	nodeAtThisPosition->m_leftChild->arrange(ast);
+	ast.printTree(nodeAtThisPosition);
+
+	// rearrange operands in order: expressions, constants, matrices, variables (in alphabetic order)
+	TreeNode* unorderedNodeParent = nodeAtThisPosition;
+
+	while (unorderedNodeParent->m_leftChild->equalPrecedenceAs(m_opr) &&
+		unorderedNodeParent->m_rightChild->getOrderRank() <
+		unorderedNodeParent->m_leftChild->m_rightChild->getOrderRank())
+		unorderedNodeParent = ast.reverseRelationship(unorderedNodeParent, LEFT_CHILD_RIGHT_SUBTREE)->m_leftChild;
+
+	if (unorderedNodeParent->m_leftChild->getOrderRank() > unorderedNodeParent->m_rightChild->getOrderRank())
+		ast.swapChildren(unorderedNodeParent);
 #else
-	m_leftChild->simplify(ast);
-	m_rightChild->simplify(ast);
-	ast.replaceSubtree(this, m_leftChild->evaluate1(m_opr, m_rightChild));
+	// x + (-y) = x - y;   x - (-y) = x + y;   reduction
+	if ((m_opr == '+' || m_opr == '-') && m_rightChild->isNegation()) {
+		ast.removeOneChildNode(m_rightChild);
+		m_opr = (m_opr == '+' ? '-' : '+');
+	}
+	TreeNode* nodeAtThisPosition = this;
+
+	// x + (y + z) = x + y + z;   reduction
+	if (m_rightChild->equalPrecedenceAs(m_opr, true))
+		nodeAtThisPosition = ast.reverseRelationship(this, RIGHT_CHILD_RIGHT_SUBTREE);
+
+	nodeAtThisPosition->m_rightChild->arrange(ast);
+	nodeAtThisPosition->m_leftChild->arrange(ast);
+
+	// rearrange operands in order: expressions, constants, matrices, variables (in alphabetic order)
+	TreeNode* unorderedNodeParent = nodeAtThisPosition;
+
+	while (unorderedNodeParent->m_leftChild->equalPrecedenceAs(m_opr) &&
+		unorderedNodeParent->m_rightChild->getOrderRank() <
+		unorderedNodeParent->m_leftChild->m_rightChild->getOrderRank())
+		unorderedNodeParent = ast.reverseRelationship(unorderedNodeParent, LEFT_CHILD_RIGHT_SUBTREE)->m_leftChild;
+
+	if (unorderedNodeParent->m_leftChild->getOrderRank() > unorderedNodeParent->m_rightChild->getOrderRank())
+		ast.swapChildren(unorderedNodeParent);
 #endif
 }
 
-AbstractSyntaxTree BinaryOperation::evaluate1(const Napis& opr, TreeNode* right) const
+void BinaryOperation::evaluate(AbstractSyntaxTree& ast)
 {
-	return right->evaluate2(*this, opr);
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this, TREE_NODE_COLOR2);
+	m_leftChild->evaluate(ast);
+	ast.printTree(this, TREE_NODE_COLOR2);
+	m_rightChild->evaluate(ast);
+	ast.printTree(this, TREE_NODE_COLOR2);
+	// x + (-y) = x - y;   x - (-y) = x + y;   reduction
+	if ((m_opr == '+' || m_opr == '-') && m_rightChild->isNegation()) {
+		ast.removeOneChildNode(m_rightChild);
+		m_opr = (m_opr == '+' ? '-' : '+');
+		return;
+	}
+	ast.printTree(this, TREE_NODE_COLOR2);
+	ast.replaceSubtree(this, m_leftChild->compute1(m_opr, m_rightChild));
+#else
+	m_leftChild->evaluate(ast);
+	m_rightChild->evaluate(ast);
+	ast.replaceSubtree(this, m_leftChild->compute1(m_opr, m_rightChild));
+#endif
+}
+
+AbstractSyntaxTree BinaryOperation::compute1(const Napis& opr, TreeNode* right) const
+{
+	return right->compute2(*this, opr);
 }
 
 Napis BinaryOperation::toNapis() const
@@ -65,12 +135,21 @@ Napis BinaryOperation::toNapis() const
 
 bool BinaryOperation::lowerPrecedenceThan(const Napis& opr2) const
 {
-	return precedence(m_opr.getStr()[0]) < precedence(opr2.getStr()[0]);
+	return precedence(m_opr) < precedence(opr2);
 }
 
-bool BinaryOperation::equalPrecedenceAs(const Napis& opr2) const
+bool BinaryOperation::equalPrecedenceAs(const Napis& opr1, bool replace)
 {
-	return precedence(m_opr.getStr()[0]) == precedence(opr2.getStr()[0]);
+	if (precedence(m_opr) == precedence(opr1)) {
+		if (replace) {
+			if (opr1 == '-')
+				m_opr = (m_opr == '+' ? '-' : '+');
+			else if (opr1 == '/')
+				m_opr = (m_opr == '*' ? '/' : '*');
+		}
+		return true;
+	}
+	return false;
 }
 
 bool BinaryOperation::isNegationSignificant() const

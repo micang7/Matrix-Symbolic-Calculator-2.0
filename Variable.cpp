@@ -6,7 +6,7 @@
 #include "Constant.h"
 #include "Matrix.h"
 
-Variable::Variable(char name)
+Variable::Variable(char name) : TreeNode(('A' <= name && name <= 'Z' ? name - 61 : name - 67))
 {
 	m_name = name;
 }
@@ -21,9 +21,9 @@ TreeNode* Variable::shift()
 	return new Variable(std::move(*this));
 }
 
-AbstractSyntaxTree Variable::evaluate1(const Napis& opr, TreeNode* right) const
+AbstractSyntaxTree Variable::compute1(const Napis& opr, TreeNode* right) const
 {
-	return right->evaluate2(*this, opr);
+	return right->compute2(*this, opr);
 }
 
 Napis Variable::toNapis() const

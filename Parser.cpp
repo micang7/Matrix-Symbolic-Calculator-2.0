@@ -228,20 +228,12 @@ void onlyIntegers(Napis& expression)
 	}
 }
 
-int precedence(char opr)
+int precedence(const Napis& opr)
 {
-	switch (opr) {
-	case '+':
-	case '-':
-		return 1;
-	case '*':
-	case '/':
-		return 2;
-	case '^':
-		return 3;
-	default:
-		return 4;
-	}
+	if (opr == '+' || opr == '-') return 1;
+	if (opr == '*' || opr == '/') return 2;
+	if (opr == '^') return 3;
+	return 4;
 }
 
 Napis infixToPrefix(Napis infix)

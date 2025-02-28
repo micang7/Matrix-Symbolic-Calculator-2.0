@@ -3,21 +3,21 @@
 #include "AbstractSyntaxTree.h"
 #include "UnaryOperation.h"
 
-TreeNode::TreeNode()
+TreeNode::TreeNode(int orderRank) : m_orderRank(orderRank)
 {
 	m_parent = nullptr;
 	m_leftChild = nullptr;
 	m_rightChild = nullptr;
 }
 
-TreeNode::TreeNode(const TreeNode& original)
+TreeNode::TreeNode(const TreeNode& original) : m_orderRank(original.m_orderRank)
 {
 	m_parent = nullptr;
 	m_leftChild = nullptr;
 	m_rightChild = nullptr;
 }
 
-TreeNode::TreeNode(TreeNode&& original) noexcept
+TreeNode::TreeNode(TreeNode&& original) noexcept : m_orderRank(original.m_orderRank)
 {
 	m_parent = nullptr;
 	m_leftChild = nullptr;
@@ -37,46 +37,58 @@ TreeNode* TreeNode::nextFreeNode()
 	return nullptr;
 }
 
-void TreeNode::simplify(AbstractSyntaxTree& ast)
+bool TreeNode::isNegation() const
+{
+	return false;
+}
+
+void TreeNode::arrange(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
 }
 
-AbstractSyntaxTree TreeNode::evaluate(const Napis& opr) const
+int TreeNode::getOrderRank() const
+{
+	return m_orderRank;
+}
+
+void TreeNode::evaluate(AbstractSyntaxTree& ast)
+{
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this);
+#endif
+}
+
+AbstractSyntaxTree TreeNode::compute(const Napis& opr) const
 {
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree TreeNode::evaluate2(const Constant& left, const Napis& opr) const
+AbstractSyntaxTree TreeNode::compute2(const Constant& left, const Napis& opr) const
 {
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree TreeNode::evaluate2(const Matrix& left, const Napis& opr) const
+AbstractSyntaxTree TreeNode::compute2(const Matrix& left, const Napis& opr) const
 {
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree TreeNode::evaluate2(const Variable& left, const Napis& opr) const
+AbstractSyntaxTree TreeNode::compute2(const Variable& left, const Napis& opr) const
 {
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree TreeNode::evaluate2(const BinaryOperation& left, const Napis& opr) const
+AbstractSyntaxTree TreeNode::compute2(const BinaryOperation& left, const Napis& opr) const
 {
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree TreeNode::evaluate2(const UnaryOperation& left, const Napis& opr) const
+AbstractSyntaxTree TreeNode::compute2(const UnaryOperation& left, const Napis& opr) const
 {
 	return AbstractSyntaxTree();
-}
-
-bool TreeNode::isNegation() const
-{
-	return false;
 }
 
 Napis TreeNode::toNapisExpand() const
@@ -94,7 +106,7 @@ bool TreeNode::lowerPrecedenceThan(const Napis& opr2) const
 	return false;
 }
 
-bool TreeNode::equalPrecedenceAs(const Napis& opr2) const
+bool TreeNode::equalPrecedenceAs(const Napis& opr1, bool replace)
 {
 	return false;
 }

@@ -25,82 +25,86 @@ TreeNode* UnaryOperation::nextFreeNode()
 	return nullptr;
 }
 
-void UnaryOperation::simplify(AbstractSyntaxTree& ast)
+bool UnaryOperation::isNegation() const
+{
+	return m_opr == '-';
+}
+
+void UnaryOperation::arrange(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
-	if (m_opr == '-' && m_leftChild->isNegation()) {
-		TreeNode* next = m_leftChild->m_leftChild;
-		ast.removeOneChildNode(m_leftChild);
-		ast.removeOneChildNode(this);
-		next->simplify(ast);
-	}
-	else {
-		m_leftChild->simplify(ast);
-		ast.printTree(this);
-		ast.replaceSubtree(this, m_leftChild->evaluate(m_opr));
-	}
-	
-#else
+#endif
 	// double negation reduction
 	if (m_opr == '-' && m_leftChild->isNegation()) {
 		TreeNode* next = m_leftChild->m_leftChild;
 		ast.removeOneChildNode(m_leftChild);
 		ast.removeOneChildNode(this);
-		next->simplify(ast);
+		next->arrange(ast);
 		return;
 	}
+	m_leftChild->arrange(ast);
+}
 
-	m_leftChild->simplify(ast);
-	ast.replaceSubtree(this, m_leftChild->evaluate(m_opr));
+int UnaryOperation::getOrderRank() const
+{
+	if (m_opr == '-') return m_leftChild->getOrderRank();
+	return m_orderRank;
+}
+
+void UnaryOperation::evaluate(AbstractSyntaxTree& ast)
+{
+#ifdef AST_MARK_VISITED_NODE
+	ast.printTree(this, TREE_NODE_COLOR2);
+	m_leftChild->evaluate(ast);
+	ast.printTree(this, TREE_NODE_COLOR2);
+	ast.replaceSubtree(this, m_leftChild->compute(m_opr));
+#else
+	m_leftChild->evaluate(ast);
+	ast.replaceSubtree(this, m_leftChild->compute(m_opr));
 #endif
 }
 
-AbstractSyntaxTree UnaryOperation::evaluate(const Napis& opr) const
+AbstractSyntaxTree UnaryOperation::compute(const Napis& opr) const
 {
-	if (m_opr == '-') return m_leftChild->evaluate(opr);
+	if (m_opr == '-') return m_leftChild->compute(opr);
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree UnaryOperation::evaluate1(const Napis& opr, TreeNode* right) const
+AbstractSyntaxTree UnaryOperation::compute1(const Napis& opr, TreeNode* right) const
 {
-	if (m_opr == '-') return m_leftChild->evaluate1(opr, right);
-	return right->evaluate2(*this, opr);
+	if (m_opr == '-') return m_leftChild->compute1(opr, right);
+	return right->compute2(*this, opr);
 }
 
-AbstractSyntaxTree UnaryOperation::evaluate2(const Constant& left, const Napis& opr) const
+AbstractSyntaxTree UnaryOperation::compute2(const Constant& left, const Napis& opr) const
 {
-	if (m_opr == '-') return m_leftChild->evaluate2(left, opr);
+	if (m_opr == '-') return m_leftChild->compute2(left, opr);
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree UnaryOperation::evaluate2(const Matrix& left, const Napis& opr) const
+AbstractSyntaxTree UnaryOperation::compute2(const Matrix& left, const Napis& opr) const
 {
-	if (m_opr == '-') return m_leftChild->evaluate2(left, opr);
+	if (m_opr == '-') return m_leftChild->compute2(left, opr);
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree UnaryOperation::evaluate2(const Variable& left, const Napis& opr) const
+AbstractSyntaxTree UnaryOperation::compute2(const Variable& left, const Napis& opr) const
 {
-	if (m_opr == '-') return m_leftChild->evaluate2(left, opr);
+	if (m_opr == '-') return m_leftChild->compute2(left, opr);
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree UnaryOperation::evaluate2(const BinaryOperation& left, const Napis& opr) const
+AbstractSyntaxTree UnaryOperation::compute2(const BinaryOperation& left, const Napis& opr) const
 {
-	if (m_opr == '-') return m_leftChild->evaluate2(left, opr);
+	if (m_opr == '-') return m_leftChild->compute2(left, opr);
 	return AbstractSyntaxTree();
 }
 
-AbstractSyntaxTree UnaryOperation::evaluate2(const UnaryOperation& left, const Napis& opr) const
+AbstractSyntaxTree UnaryOperation::compute2(const UnaryOperation& left, const Napis& opr) const
 {
-	if (m_opr == '-') return m_leftChild->evaluate2(left, opr);
+	if (m_opr == '-') return m_leftChild->compute2(left, opr);
 	return AbstractSyntaxTree();
-}
-
-bool UnaryOperation::isNegation() const
-{
-	return m_opr == '-';
 }
 
 Napis UnaryOperation::toNapis() const

@@ -8,7 +8,7 @@
 #include "Variable.h"
 #include <iostream>
 
-Matrix::Matrix(const Napis& expression)
+Matrix::Matrix(const Napis& expression) : TreeNode(3)
 {
 	if (!CYK(expression)) throw std::invalid_argument("Error: Matrix: Invalid expression!");
 
@@ -58,7 +58,7 @@ Matrix::Matrix(const Napis& expression)
 	}
 }
 
-Matrix::Matrix(int rows, int cols, const Napis& expression)
+Matrix::Matrix(int rows, int cols, const Napis& expression) : TreeNode(3)
 {
 	m_rows = rows;
 	m_cols = cols;
@@ -81,7 +81,7 @@ Matrix::Matrix(int rows, int cols, const Napis& expression)
 	}
 }
 
-Matrix::Matrix(const Matrix& original)
+Matrix::Matrix(const Matrix& original) : TreeNode(original)
 {
 	m_rows = original.m_rows;
 	m_cols = original.m_cols;
@@ -93,7 +93,7 @@ Matrix::Matrix(const Matrix& original)
 	}
 }
 
-Matrix::Matrix(Matrix&& original) noexcept
+Matrix::Matrix(Matrix&& original) noexcept : TreeNode(original)
 {
 	m_rows = original.m_rows;
 	m_cols = original.m_cols;
@@ -124,9 +124,9 @@ TreeNode* Matrix::shift()
 	return new Matrix(std::move(*this));
 }
 
-AbstractSyntaxTree Matrix::evaluate1(const Napis& opr, TreeNode* right) const
+AbstractSyntaxTree Matrix::compute1(const Napis& opr, TreeNode* right) const
 {
-	return right->evaluate2(*this, opr);
+	return right->compute2(*this, opr);
 }
 
 Napis Matrix::toNapis() const

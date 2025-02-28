@@ -10,7 +10,7 @@ public:
 	TreeNode* clone() const override;
 	TreeNode* shift() override;
 
-	AbstractSyntaxTree evaluate1(const Napis& opr, TreeNode* right) const override;
+	AbstractSyntaxTree compute1(const Napis& opr, TreeNode* right) const override;
 
 	Napis toNapis() const override;
 };

@@ -8,7 +8,7 @@
 #include "Variable.h"
 #include <iostream>
 
-Constant::Constant(int val)
+Constant::Constant(int val) : TreeNode(2)
 {
 	m_val = val;
 }
@@ -23,7 +23,7 @@ TreeNode* Constant::shift()
 	return new Constant(std::move(*this));
 }
 
-AbstractSyntaxTree Constant::evaluate1(const Napis& opr, TreeNode* right) const
+AbstractSyntaxTree Constant::compute1(const Napis& opr, TreeNode* right) const
 {
 	// 1 * x = x;   0 + x = x;   reduction
 	if ((m_val == 1 && opr == '*') ||
@@ -38,10 +38,10 @@ AbstractSyntaxTree Constant::evaluate1(const Napis& opr, TreeNode* right) const
 	if (m_val == 0 && (opr == '*' || opr == '/'))
 		return AbstractSyntaxTree(Constant(0));
 
-	return right->evaluate2(*this, opr);
+	return right->compute2(*this, opr);
 }
 
-AbstractSyntaxTree Constant::evaluate2(const Constant& left, const Napis& opr) const
+AbstractSyntaxTree Constant::compute2(const Constant& left, const Napis& opr) const
 {
 	// x * 1 = x;   x / 1 = x   x + 0 = x;   x - 0 = x;   reduction
 	if ((m_val == 1 && (opr == '*' || opr == '/')) ||

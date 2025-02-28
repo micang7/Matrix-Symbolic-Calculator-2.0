@@ -11,18 +11,19 @@ public:
 
 	TreeNode* nextFreeNode() override;
 
-	void simplify(AbstractSyntaxTree& ast) override;
-
-	AbstractSyntaxTree evaluate(const Napis& opr) const override;
-
-	AbstractSyntaxTree evaluate1(const Napis& opr, TreeNode* right) const override;
-	AbstractSyntaxTree evaluate2(const Constant& left, const Napis& opr) const override;
-	AbstractSyntaxTree evaluate2(const Matrix& left, const Napis& opr) const override;
-	AbstractSyntaxTree evaluate2(const Variable& left, const Napis& opr) const override;
-	AbstractSyntaxTree evaluate2(const BinaryOperation& left, const Napis& opr) const override;
-	AbstractSyntaxTree evaluate2(const UnaryOperation& left, const Napis& opr) const override;
-
 	bool isNegation() const override;
+
+	void arrange(AbstractSyntaxTree& ast) override;
+	int getOrderRank() const override;
+
+	void evaluate(AbstractSyntaxTree& ast) override;
+	AbstractSyntaxTree compute(const Napis& opr) const override;
+	AbstractSyntaxTree compute1(const Napis& opr, TreeNode* right) const override;
+	AbstractSyntaxTree compute2(const Constant& left, const Napis& opr) const override;
+	AbstractSyntaxTree compute2(const Matrix& left, const Napis& opr) const override;
+	AbstractSyntaxTree compute2(const Variable& left, const Napis& opr) const override;
+	AbstractSyntaxTree compute2(const BinaryOperation& left, const Napis& opr) const override;
+	AbstractSyntaxTree compute2(const UnaryOperation& left, const Napis& opr) const override;
 
 	Napis toNapis() const override;
 };
