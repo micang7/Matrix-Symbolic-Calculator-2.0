@@ -10,12 +10,14 @@ class Variable;
 
 class TreeNode
 {
+protected:
+	const int m_orderRank;
 public:
 	TreeNode* m_parent;
 	TreeNode* m_leftChild;
 	TreeNode* m_rightChild;
 
-	TreeNode();
+	TreeNode(int orderRank);
 	TreeNode(const TreeNode& original);
 	TreeNode(TreeNode&& original) noexcept;
 	virtual ~TreeNode();
@@ -27,7 +29,8 @@ public:
 
 	virtual bool isNegation() const;
 
-	virtual void reorganise(AbstractSyntaxTree& ast);
+	virtual void arrange(AbstractSyntaxTree& ast);
+	virtual int getOrderRank() const;
 
 	virtual void evaluate(AbstractSyntaxTree& ast);
 	virtual AbstractSyntaxTree compute(const Napis& opr) const;
@@ -43,6 +46,6 @@ public:
 	virtual Napis toNapisJustNode() const;
 
 	virtual bool lowerPrecedenceThan(const Napis& opr2) const;
-	virtual bool equalPrecedenceAs(const Napis& opr2) const;
+	virtual bool equalPrecedenceAs(const Napis& opr1, bool replace = false);
 	virtual bool isNegationSignificant() const;
 };

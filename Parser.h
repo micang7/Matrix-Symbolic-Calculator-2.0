@@ -51,7 +51,7 @@ Napis floatToFraction(int digits, int offset, int periodOffset);
 
 void onlyIntegers(Napis& expression);
 
-int precedence(char opr);
+int precedence(const Napis& opr);
 
 Napis infixToPrefix(Napis infix);
 

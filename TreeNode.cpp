@@ -3,21 +3,21 @@
 #include "AbstractSyntaxTree.h"
 #include "UnaryOperation.h"
 
-TreeNode::TreeNode()
+TreeNode::TreeNode(int orderRank) : m_orderRank(orderRank)
 {
 	m_parent = nullptr;
 	m_leftChild = nullptr;
 	m_rightChild = nullptr;
 }
 
-TreeNode::TreeNode(const TreeNode& original)
+TreeNode::TreeNode(const TreeNode& original) : m_orderRank(original.m_orderRank)
 {
 	m_parent = nullptr;
 	m_leftChild = nullptr;
 	m_rightChild = nullptr;
 }
 
-TreeNode::TreeNode(TreeNode&& original) noexcept
+TreeNode::TreeNode(TreeNode&& original) noexcept : m_orderRank(original.m_orderRank)
 {
 	m_parent = nullptr;
 	m_leftChild = nullptr;
@@ -42,11 +42,16 @@ bool TreeNode::isNegation() const
 	return false;
 }
 
-void TreeNode::reorganise(AbstractSyntaxTree& ast)
+void TreeNode::arrange(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
 #endif
+}
+
+int TreeNode::getOrderRank() const
+{
+	return m_orderRank;
 }
 
 void TreeNode::evaluate(AbstractSyntaxTree& ast)
@@ -101,7 +106,7 @@ bool TreeNode::lowerPrecedenceThan(const Napis& opr2) const
 	return false;
 }
 
-bool TreeNode::equalPrecedenceAs(const Napis& opr2) const
+bool TreeNode::equalPrecedenceAs(const Napis& opr1, bool replace)
 {
 	return false;
 }

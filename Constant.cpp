@@ -8,7 +8,7 @@
 #include "Variable.h"
 #include <iostream>
 
-Constant::Constant(int val)
+Constant::Constant(int val) : TreeNode(2)
 {
 	m_val = val;
 }

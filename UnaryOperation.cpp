@@ -30,7 +30,7 @@ bool UnaryOperation::isNegation() const
 	return m_opr == '-';
 }
 
-void UnaryOperation::reorganise(AbstractSyntaxTree& ast)
+void UnaryOperation::arrange(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
 	ast.printTree(this);
@@ -40,10 +40,16 @@ void UnaryOperation::reorganise(AbstractSyntaxTree& ast)
 		TreeNode* next = m_leftChild->m_leftChild;
 		ast.removeOneChildNode(m_leftChild);
 		ast.removeOneChildNode(this);
-		next->reorganise(ast);
+		next->arrange(ast);
 		return;
 	}
-	m_leftChild->reorganise(ast);
+	m_leftChild->arrange(ast);
+}
+
+int UnaryOperation::getOrderRank() const
+{
+	if (m_opr == '-') return m_leftChild->getOrderRank();
+	return m_orderRank;
 }
 
 void UnaryOperation::evaluate(AbstractSyntaxTree& ast)
@@ -55,7 +61,7 @@ void UnaryOperation::evaluate(AbstractSyntaxTree& ast)
 	ast.replaceSubtree(this, m_leftChild->compute(m_opr));
 #else
 	m_leftChild->evaluate(ast);
-	ast.replaceSubtree(this, m_leftChild->result(m_opr));
+	ast.replaceSubtree(this, m_leftChild->compute(m_opr));
 #endif
 }
 

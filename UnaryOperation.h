@@ -13,7 +13,8 @@ public:
 
 	bool isNegation() const override;
 
-	void reorganise(AbstractSyntaxTree& ast) override;
+	void arrange(AbstractSyntaxTree& ast) override;
+	int getOrderRank() const override;
 
 	void evaluate(AbstractSyntaxTree& ast) override;
 	AbstractSyntaxTree compute(const Napis& opr) const override;

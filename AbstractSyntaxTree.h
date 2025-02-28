@@ -32,11 +32,17 @@ public:
 
 	void removeOneChildNode(TreeNode* node);
 
+	void swapChildren(TreeNode* parent);
+
+	TreeNode* reverseRelationship(TreeNode* parent, reverseRelationshipMode mode);
+
 	void addSubtree(TreeNode* parent, const TreeNode* subtreeRoot);
-	void attachSubtree(TreeNode* parent, TreeNode* subtreeRoot);
+	void pushSubtree(TreeNode* parent, TreeNode* subtreeRoot);
 
 	void replaceSubtree(TreeNode* oldSubtreeRoot, const AbstractSyntaxTree& newSubtree);
 	void replaceSubtree(TreeNode* oldSubtreeRoot, AbstractSyntaxTree&& newSubtree);
+
+	void swapExclusiveSubtrees(TreeNode* subtree1Root, TreeNode* subtree2Root);
 
 	void removeSubtree(TreeNode* subtreeRoot);
 

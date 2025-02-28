@@ -9,8 +9,5 @@ protected:
 public:
 	Operation(const Napis& opr);
 
-	const Napis& getOpr() const;
-	void setOpr(Napis&& opr);
-
 	Napis toNapisJustNode() const override;
 };

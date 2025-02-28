@@ -6,7 +6,7 @@
 #include "Constant.h"
 #include "Matrix.h"
 
-Variable::Variable(char name)
+Variable::Variable(char name) : TreeNode(('A' <= name && name <= 'Z' ? name - 61 : name - 67))
 {
 	m_name = name;
 }
