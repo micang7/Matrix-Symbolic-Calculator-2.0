@@ -26,5 +26,6 @@ public:
 	AbstractSyntaxTree compute2(const UnaryOperation& left, const Napis& opr) const override;
 
 	Napis toNapis() const override;
+	Napis toNapisExpand() const override;
 };
 

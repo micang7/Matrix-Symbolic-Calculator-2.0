@@ -16,6 +16,9 @@ public:
 	AbstractSyntaxTree(const Napis& infixExpression);
 
 	AbstractSyntaxTree(const TreeNode& operand);
+	AbstractSyntaxTree(TreeNode&& operand);
+
+	AbstractSyntaxTree(TreeNode* structure[], int nodesCount);
 
 	AbstractSyntaxTree(const AbstractSyntaxTree& original);
 	AbstractSyntaxTree& operator=(const AbstractSyntaxTree& original);
@@ -24,8 +27,6 @@ public:
 	AbstractSyntaxTree& operator=(AbstractSyntaxTree&& original) noexcept;
 
 	~AbstractSyntaxTree();
-
-	TreeNode* getRoot() const;
 
 	TreeNode* addChild(TreeNode* parent, const TreeNode& child);
 	TreeNode* addChild(TreeNode* parent, TreeNode&& child);

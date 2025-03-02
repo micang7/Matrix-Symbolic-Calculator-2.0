@@ -133,20 +133,20 @@ Napis Matrix::toNapis() const
 {
 	if (m_rows == 0 || m_cols == 0) return "";
 
-	Napis expression = "{";
+	Napis expression = '{';
 	for (int i = 0; i < m_rows - 1; i++) {
-		expression += "{";
+		expression += '{';
 		for (int j = 0; j < m_cols - 1; j++) {
 			expression += m_matrix[i][j]->toNapis();
-			expression += ",";
+			expression += ',';
 		}
 		expression += m_matrix[i][m_cols - 1]->toNapis();
 		expression += "},";
 	}
-	expression += "{";
+	expression += '{';
 	for (int j = 0; j < m_cols - 1; j++) {
 		expression += m_matrix[m_rows - 1][j]->toNapis();
-		expression += ",";
+		expression += ',';
 	}
 	expression += m_matrix[m_rows - 1][m_cols - 1]->toNapis();
 	expression += "}}";
@@ -169,13 +169,13 @@ Napis Matrix::toNapisExpand() const
 	}
 	Napis element;
 	Napis separator = "  ";
-	Napis expression = "";
+	Napis expression = '%';
 	for (int i = 0; i < m_rows - 1; i++) {
 		for (int j = 0; j < m_cols - 1; j++) {
 			element = m_matrix[i][j]->toNapis();
 			expression += element;
 			for (int k = 0; k < maxWidth[j] - element.getLen(); k++)
-				expression += " ";
+				expression += ' ';
 			expression += separator;
 		}
 		expression += m_matrix[i][m_cols - 1]->toNapis();
@@ -185,10 +185,10 @@ Napis Matrix::toNapisExpand() const
 		element = m_matrix[m_rows - 1][j]->toNapis();
 		expression += element;
 		for (int k = 0; k < maxWidth[j] - element.getLen(); k++)
-			expression += " ";
+			expression += ' ';
 		expression += separator;
 	}
-	expression += m_matrix[m_rows - 1][m_cols - 1]->toNapis();
+	expression += m_matrix[m_rows - 1][m_cols - 1]->toNapis() + '%';
 
 	delete[] maxWidth;
 

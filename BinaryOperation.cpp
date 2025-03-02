@@ -133,6 +133,22 @@ Napis BinaryOperation::toNapis() const
 		(right_parentheses ? ")" : "");
 }
 
+Napis BinaryOperation::toNapisExpand() const
+{
+	bool left_parentheses = m_leftChild->lowerPrecedenceThan(m_opr);
+	bool right_parentheses = (m_rightChild->lowerPrecedenceThan(m_opr) ||
+		(m_opr == '-' && m_rightChild->equalPrecedenceAs(m_opr)) ||
+		(m_opr == '/' && m_rightChild->equalPrecedenceAs(m_opr)));
+	return
+		(left_parentheses ? "(" : "") +
+		m_leftChild->toNapisExpand() +
+		(left_parentheses ? ")" : "") +
+		m_opr +
+		(right_parentheses ? "(" : "") +
+		m_rightChild->toNapisExpand() +
+		(right_parentheses ? ")" : "");
+}
+
 bool BinaryOperation::lowerPrecedenceThan(const Napis& opr2) const
 {
 	return precedence(m_opr) < precedence(opr2);

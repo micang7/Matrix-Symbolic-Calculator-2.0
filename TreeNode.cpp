@@ -57,7 +57,7 @@ int TreeNode::getOrderRank() const
 void TreeNode::evaluate(AbstractSyntaxTree& ast)
 {
 #ifdef AST_MARK_VISITED_NODE
-	ast.printTree(this);
+	ast.printTree(this, TREE_NODE_COLOR2);
 #endif
 }
 

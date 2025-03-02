@@ -94,20 +94,39 @@ AbstractSyntaxTree Constant::operator*(const Constant& constant2) const
 AbstractSyntaxTree Constant::operator/(const Constant& constant2) const
 {
 	int nwd = NWD(m_val, constant2.m_val);
+
 	if (nwd == constant2.m_val)
-		return ((m_parent->isNegation() xor constant2.m_parent->isNegation()) ?
+		return (m_parent->isNegation() xor constant2.m_parent->isNegation() ?
 			~AbstractSyntaxTree(Constant(m_val / constant2.m_val)) :
 			AbstractSyntaxTree(Constant(m_val / constant2.m_val)));
-	return ((m_parent->isNegation() xor constant2.m_parent->isNegation()) ?
-		~(AbstractSyntaxTree(Constant(m_val / nwd)) / Constant(constant2.m_val / nwd)) :
-		AbstractSyntaxTree(Constant(m_val / nwd)) / Constant(constant2.m_val / nwd));
+
+	TreeNode* structure[]{
+		new BinaryOperation('/'),
+		new Constant(m_val / nwd),
+		new Constant(constant2.m_val / nwd)
+	};
+	AbstractSyntaxTree result = (m_parent->isNegation() xor constant2.m_parent->isNegation() ?
+		~AbstractSyntaxTree(structure, 3) :
+		AbstractSyntaxTree(structure, 3));
+
+	for (int i = 0; i < 3; i++) delete structure[i];
+	return result;
 }
 
 AbstractSyntaxTree Constant::operator^(const Constant& constant2) const
 {
-	return (constant2.m_parent->isNegation() ?
-		AbstractSyntaxTree(Constant(1)) / Constant(pow(m_val, constant2.m_val)) :
-		AbstractSyntaxTree(Constant(pow(m_val, constant2.m_val))));
+	if (constant2.m_parent->isNegation()) {
+		TreeNode* structure[]{
+			new BinaryOperation('/'),
+			new Constant(1),
+			new Constant(pow(m_val, constant2.m_val))
+		};
+		AbstractSyntaxTree result(structure, 3);
+
+		for (int i = 0; i < 3; i++) delete structure[i];
+		return result;
+	}
+	return AbstractSyntaxTree(Constant(pow(m_val, constant2.m_val)));
 }
 
 Napis Constant::toNapis() const

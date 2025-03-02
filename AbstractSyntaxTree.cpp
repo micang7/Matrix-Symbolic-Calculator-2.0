@@ -174,6 +174,19 @@ AbstractSyntaxTree::AbstractSyntaxTree(const TreeNode& operand)
 	m_root = operand.clone();
 }
 
+AbstractSyntaxTree::AbstractSyntaxTree(TreeNode&& operand)
+{
+	m_root = operand.shift();
+}
+
+AbstractSyntaxTree::AbstractSyntaxTree(TreeNode* structure[], int nodesCount)
+{
+	TreeNode* current = m_root = nullptr;
+
+	for (int i = 0; i < nodesCount; i++)
+		current = addChild(current, std::move(*structure[i]))->nextFreeNode();
+}
+
 AbstractSyntaxTree::AbstractSyntaxTree(const AbstractSyntaxTree& original)
 {
 	addSubtree(nullptr, original.m_root);
@@ -207,11 +220,6 @@ AbstractSyntaxTree& AbstractSyntaxTree::operator=(AbstractSyntaxTree&& original)
 AbstractSyntaxTree::~AbstractSyntaxTree()
 {
 	removeSubtree(m_root);
-}
-
-TreeNode* AbstractSyntaxTree::getRoot() const
-{
-	return m_root;
 }
 
 TreeNode* AbstractSyntaxTree::addChild(TreeNode* parent, const TreeNode& child)
@@ -410,7 +418,7 @@ void AbstractSyntaxTree::pushSubtree(TreeNode* parent, TreeNode* subtreeRoot)
 
 void AbstractSyntaxTree::replaceSubtree(TreeNode* oldSubtreeRoot, const AbstractSyntaxTree& newSubtree)
 {
-	TreeNode* newSubtreeRoot = newSubtree.getRoot();
+	TreeNode* newSubtreeRoot = newSubtree.m_root;
 	if (!newSubtreeRoot) return;
 
 	TreeNode* parent = oldSubtreeRoot->m_parent;
@@ -421,7 +429,7 @@ void AbstractSyntaxTree::replaceSubtree(TreeNode* oldSubtreeRoot, const Abstract
 
 void AbstractSyntaxTree::replaceSubtree(TreeNode* oldSubtreeRoot, AbstractSyntaxTree&& newSubtree)
 {
-	TreeNode* newSubtreeRoot = newSubtree.getRoot();
+	TreeNode* newSubtreeRoot = newSubtree.m_root;
 	if (!newSubtreeRoot) return;
 
 	TreeNode* parent = oldSubtreeRoot->m_parent;
@@ -505,7 +513,7 @@ AbstractSyntaxTree operator~(AbstractSyntaxTree&& ast)
 		result.pushSubtree(result.addChild(nullptr, UnaryOperation('-')), ast.m_root);
 
 	ast.m_root = nullptr;
-	
+
 	return result;
 }
 
@@ -518,6 +526,8 @@ AbstractSyntaxTree operator+(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 
 	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
+
+	result.evaluate();
 
 	return result;
 }
@@ -532,6 +542,8 @@ AbstractSyntaxTree operator-(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
 
+	result.evaluate();
+
 	return result;
 }
 
@@ -544,6 +556,8 @@ AbstractSyntaxTree operator*(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 
 	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
+
+	result.evaluate();
 
 	return result;
 }
@@ -558,6 +572,8 @@ AbstractSyntaxTree operator/(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
 
+	result.evaluate();
+
 	return result;
 }
 
@@ -570,6 +586,8 @@ AbstractSyntaxTree operator^(AbstractSyntaxTree&& ast1, AbstractSyntaxTree&& ast
 
 	ast1.m_root = nullptr;
 	ast2.m_root = nullptr;
+
+	result.evaluate();
 
 	return result;
 }

@@ -120,3 +120,17 @@ Napis UnaryOperation::toNapis() const
 		(inner_parentheses ? ")" : "") +
 		(outer_parentheses ? ")" : "");
 }
+
+Napis UnaryOperation::toNapisExpand() const
+{
+	bool inner_parentheses = m_leftChild->isNegationSignificant();
+	bool outer_parentheses = (m_parent && m_parent->isNegationSignificant() &&
+		this == m_parent->m_rightChild);
+	return
+		(outer_parentheses ? "(" : "") +
+		m_opr +
+		(inner_parentheses ? "(" : "") +
+		m_leftChild->toNapisExpand() +
+		(inner_parentheses ? ")" : "") +
+		(outer_parentheses ? ")" : "");
+}

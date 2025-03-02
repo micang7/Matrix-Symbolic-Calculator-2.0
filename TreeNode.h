@@ -40,7 +40,7 @@ public:
 	virtual AbstractSyntaxTree compute2(const Variable& left, const Napis& opr) const;
 	virtual AbstractSyntaxTree compute2(const BinaryOperation& left, const Napis& opr) const;
 	virtual AbstractSyntaxTree compute2(const UnaryOperation& left, const Napis& opr) const;
-	
+
 	virtual Napis toNapis() const = 0;
 	virtual Napis toNapisExpand() const;
 	virtual Napis toNapisJustNode() const;

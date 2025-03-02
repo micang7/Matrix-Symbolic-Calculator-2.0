@@ -4,7 +4,7 @@
 
 #define AST_VISUALISE
 
-//#define AST_MARK_VISITED_NODE
+#define AST_MARK_VISITED_NODE
 
 const static char* TREE_COLOR		= "\033[32m";
 const static char* TREE_NODE_COLOR1	= "\033[44m";
